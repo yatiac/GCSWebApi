@@ -1,49 +1,42 @@
-﻿using GCSApi;
+﻿using GCSApi.Apis;
 using GCSApi.Models;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
 
 namespace GCS.WebApi.Controllers
 {
     public class WorkOrdersController : ApiController
     {
-        IApi api;
+        IApi<WorkOrder> api;
 
         public WorkOrdersController()
         {
-            api = new Api();
+            api = new WorkOrdersApi();
         }
 
-        public object Get(string id)
+        public object Get(int id)
         {
-            var response = api.GetWorkOrder(id);
-            return response;
+            var response = api.Get(id);
+            return response == null ? NotFound() : (object)Ok(response);
         }
 
         [HttpPost]
         public object Post([FromBody]WorkOrder data)
         {
-            var response = api.CreateWorkOrder(data);
-            return Created(data.Id, response);
+            var response = api.Create(data);
+            return Created(Request.RequestUri + "/" + response.Id, response);
         }
-
 
         [HttpGet]
         public object Get()
         {
-            var response = api.GetWorkOrders();
+            var response = api.Get();
             return response;
         }
 
         [HttpDelete]
-        public object Delete(string id)
+        public object Delete(int id)
         {
-            var response = api.DeleteWorkOrder(id);
+            var response = api.Delete(id);
             return response;
         }
     }

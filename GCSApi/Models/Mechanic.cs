@@ -1,8 +1,10 @@
-﻿namespace GCSApi.Models
+﻿using System.Collections.Generic;
+
+namespace GCSApi.Models
 {
     public class Mechanic
     {
-        public string Id { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
     }
 }

@@ -3,7 +3,7 @@ namespace GCSApi.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class InitialMigration : DbMigration
+    public partial class Initial : DbMigration
     {
         public override void Up()
         {
@@ -11,7 +11,7 @@ namespace GCSApi.Migrations
                 "dbo.Mechanics",
                 c => new
                     {
-                        Id = c.String(nullable: false, maxLength: 128),
+                        Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
                     })
                 .PrimaryKey(t => t.Id);
@@ -20,7 +20,7 @@ namespace GCSApi.Migrations
                 "dbo.Owners",
                 c => new
                     {
-                        Id = c.String(nullable: false, maxLength: 128),
+                        Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
                         Email = c.String(),
                         Phone = c.String(),
@@ -31,45 +31,46 @@ namespace GCSApi.Migrations
                 "dbo.Vehicles",
                 c => new
                     {
-                        Id = c.String(nullable: false, maxLength: 128),
+                        Id = c.Int(nullable: false, identity: true),
                         Plate = c.String(),
                         Maker = c.String(),
                         Model = c.String(),
                         Color = c.String(),
                         VIN = c.String(),
                         Year = c.Int(nullable: false),
-                        Owner_Id = c.String(maxLength: 128),
+                        OwnerId = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Owners", t => t.Owner_Id)
-                .Index(t => t.Owner_Id);
+                .ForeignKey("dbo.Owners", t => t.OwnerId, cascadeDelete: true)
+                .Index(t => t.OwnerId);
             
             CreateTable(
                 "dbo.WorkOrders",
                 c => new
                     {
-                        Id = c.String(nullable: false, maxLength: 128),
+                        Id = c.Int(nullable: false, identity: true),
                         Date = c.DateTime(nullable: false),
-                        Mechanic_Id = c.String(maxLength: 128),
-                        Status_Id = c.String(maxLength: 128),
-                        Type_Id = c.String(maxLength: 128),
-                        Vehicle_Id = c.String(maxLength: 128),
+                        TypeId = c.Int(nullable: false),
+                        StatusId = c.Int(nullable: false),
+                        MechanicId = c.Int(nullable: false),
+                        VehicleId = c.Int(nullable: false),
+                        Symptoms = c.String(),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.Mechanics", t => t.Mechanic_Id)
-                .ForeignKey("dbo.WorkOrderStatus", t => t.Status_Id)
-                .ForeignKey("dbo.WorkOrderTypes", t => t.Type_Id)
-                .ForeignKey("dbo.Vehicles", t => t.Vehicle_Id)
-                .Index(t => t.Mechanic_Id)
-                .Index(t => t.Status_Id)
-                .Index(t => t.Type_Id)
-                .Index(t => t.Vehicle_Id);
+                .ForeignKey("dbo.Mechanics", t => t.MechanicId, cascadeDelete: true)
+                .ForeignKey("dbo.WorkOrderStatus", t => t.StatusId, cascadeDelete: true)
+                .ForeignKey("dbo.WorkOrderTypes", t => t.TypeId, cascadeDelete: true)
+                .ForeignKey("dbo.Vehicles", t => t.VehicleId, cascadeDelete: true)
+                .Index(t => t.TypeId)
+                .Index(t => t.StatusId)
+                .Index(t => t.MechanicId)
+                .Index(t => t.VehicleId);
             
             CreateTable(
                 "dbo.WorkOrderStatus",
                 c => new
                     {
-                        Id = c.String(nullable: false, maxLength: 128),
+                        Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
                     })
                 .PrimaryKey(t => t.Id);
@@ -78,7 +79,7 @@ namespace GCSApi.Migrations
                 "dbo.WorkOrderTypes",
                 c => new
                     {
-                        Id = c.String(nullable: false, maxLength: 128),
+                        Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
                     })
                 .PrimaryKey(t => t.Id);
@@ -88,31 +89,31 @@ namespace GCSApi.Migrations
                 c => new
                     {
                         Id = c.String(nullable: false, maxLength: 128),
+                        WorkOrderId = c.Int(nullable: false),
                         Price = c.Decimal(nullable: false, precision: 18, scale: 2),
                         Date = c.DateTime(nullable: false),
                         Comments = c.String(),
-                        WorkOrder_Id = c.String(maxLength: 128),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.WorkOrders", t => t.WorkOrder_Id)
-                .Index(t => t.WorkOrder_Id);
+                .ForeignKey("dbo.WorkOrders", t => t.WorkOrderId, cascadeDelete: true)
+                .Index(t => t.WorkOrderId);
             
         }
         
         public override void Down()
         {
-            DropForeignKey("dbo.Works", "WorkOrder_Id", "dbo.WorkOrders");
-            DropForeignKey("dbo.WorkOrders", "Vehicle_Id", "dbo.Vehicles");
-            DropForeignKey("dbo.WorkOrders", "Type_Id", "dbo.WorkOrderTypes");
-            DropForeignKey("dbo.WorkOrders", "Status_Id", "dbo.WorkOrderStatus");
-            DropForeignKey("dbo.WorkOrders", "Mechanic_Id", "dbo.Mechanics");
-            DropForeignKey("dbo.Vehicles", "Owner_Id", "dbo.Owners");
-            DropIndex("dbo.Works", new[] { "WorkOrder_Id" });
-            DropIndex("dbo.WorkOrders", new[] { "Vehicle_Id" });
-            DropIndex("dbo.WorkOrders", new[] { "Type_Id" });
-            DropIndex("dbo.WorkOrders", new[] { "Status_Id" });
-            DropIndex("dbo.WorkOrders", new[] { "Mechanic_Id" });
-            DropIndex("dbo.Vehicles", new[] { "Owner_Id" });
+            DropForeignKey("dbo.Works", "WorkOrderId", "dbo.WorkOrders");
+            DropForeignKey("dbo.WorkOrders", "VehicleId", "dbo.Vehicles");
+            DropForeignKey("dbo.WorkOrders", "TypeId", "dbo.WorkOrderTypes");
+            DropForeignKey("dbo.WorkOrders", "StatusId", "dbo.WorkOrderStatus");
+            DropForeignKey("dbo.WorkOrders", "MechanicId", "dbo.Mechanics");
+            DropForeignKey("dbo.Vehicles", "OwnerId", "dbo.Owners");
+            DropIndex("dbo.Works", new[] { "WorkOrderId" });
+            DropIndex("dbo.WorkOrders", new[] { "VehicleId" });
+            DropIndex("dbo.WorkOrders", new[] { "MechanicId" });
+            DropIndex("dbo.WorkOrders", new[] { "StatusId" });
+            DropIndex("dbo.WorkOrders", new[] { "TypeId" });
+            DropIndex("dbo.Vehicles", new[] { "OwnerId" });
             DropTable("dbo.Works");
             DropTable("dbo.WorkOrderTypes");
             DropTable("dbo.WorkOrderStatus");
