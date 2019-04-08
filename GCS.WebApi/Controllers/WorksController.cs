@@ -7,7 +7,7 @@ using System.Web.Http;
 
 namespace GCS.WebApi.Controllers
 {
-    public class WorksController : ApiController
+    public class WorksController : BaseController
     {
     }
 }

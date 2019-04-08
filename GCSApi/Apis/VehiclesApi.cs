@@ -1,4 +1,5 @@
 ﻿using GCSApi.Models;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
@@ -34,12 +35,21 @@ namespace GCSApi.Apis
             }
         }
 
-        public List<Vehicle> Get()
+        public List<Vehicle> Get(string filter)
         {
             using (var context = new dbContext())
             {
-                var response = context.Vehicles.Include("Owner").ToList();
-                return response;
+                if (filter != "" && filter != @"{}")
+                {
+                    var foo = JsonConvert.DeserializeObject<VehicleFilter>(filter);
+                    var id = foo.id[0];
+                    var response = context.Vehicles.Where(x => x.Id.Equals(id)).ToList();
+                    return response;
+                } else
+                {
+                    var response = context.Vehicles.Include("Owner").ToList();
+                    return response;
+                }
             }
         }
 

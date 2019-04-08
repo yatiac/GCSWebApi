@@ -14,8 +14,13 @@ namespace GCSApi.Apis
 
             using (var context = new dbContext())
             {
-                var response = context.WorkOrders.Add(data);
+                var response = context.WorkOrders.Add(data);                
                 context.SaveChanges();
+                response = context.WorkOrders
+                                    .Include("Mechanic")
+                                    .Include("Status")
+                                    .Include("Vehicle.Owner")
+                                    .Include("Type").Where(x => x.Id.Equals(response.Id)).SingleOrDefault();
                 return response;
             }
         }
@@ -34,7 +39,7 @@ namespace GCSApi.Apis
             }
         }
 
-        public List<WorkOrder> Get()
+        public List<WorkOrder> Get(string filter)
         {
             using (var context = new dbContext())
             {
@@ -61,7 +66,10 @@ namespace GCSApi.Apis
         {
             using (var context = new dbContext())
             {
-                var response = context.WorkOrders.Where(x => x.Id.Equals(data.Id)).SingleOrDefault();
+                var response = context.WorkOrders.Include("Mechanic")
+                                    .Include("Status")
+                                    .Include("Vehicle.Owner")
+                                    .Include("Type").Where(x => x.Id.Equals(data.Id)).SingleOrDefault();
                 if (response != null)
                 {
                     context.WorkOrders.AddOrUpdate(data);

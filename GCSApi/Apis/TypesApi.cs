@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace GCSApi.Apis
 {
-    public class OwnersApi : IApi<Owner>
+    public class TypesApi : IApi<WorkOrderType>
     {
-        public Owner Create(Owner data)
+        public WorkOrderType Create(WorkOrderType data)
         {
             throw new NotImplementedException();
         }
@@ -19,21 +19,21 @@ namespace GCSApi.Apis
             throw new NotImplementedException();
         }
 
-        public List<Owner> Get(string filter)
+        public List<WorkOrderType> Get(string filter)
         {
             using (var context = new dbContext())
             {
-                var response = context.Owners.ToList();
+                var response = context.WorkOrderTypes.ToList();
                 return response;
             }
         }
 
-        public Owner Get(int id)
+        public WorkOrderType Get(int id)
         {
             throw new NotImplementedException();
         }
 
-        public Owner Update(Owner data)
+        public WorkOrderType Update(WorkOrderType data)
         {
             throw new NotImplementedException();
         }

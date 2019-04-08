@@ -32,7 +32,7 @@ namespace GCSApi.Apis
             }
         }
 
-        public List<Mechanic> Get()
+        public List<Mechanic> Get(string filter)
         {
             using (var context = new dbContext())
             {

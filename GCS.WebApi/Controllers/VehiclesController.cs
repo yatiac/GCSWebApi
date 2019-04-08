@@ -5,11 +5,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 
 namespace GCS.WebApi.Controllers
 {
-    public class VehiclesController : ApiController
+    public class VehiclesController : BaseController
     {
         IApi<Vehicle> api;
 
@@ -18,9 +19,10 @@ namespace GCS.WebApi.Controllers
             api = new VehiclesApi();
         }
 
-        public object Get()
+        public object Get(string filter="")
         {
-            var response = api.Get();
+            var response = api.Get(filter);
+            AddContentRange(HttpContext.Current.Response, "vehicles", response.Count.ToString());
             return Ok(response);
         }
 

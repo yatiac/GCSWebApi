@@ -1,10 +1,11 @@
 ﻿using GCSApi.Apis;
 using GCSApi.Models;
+using System.Web;
 using System.Web.Http;
 
 namespace GCS.WebApi.Controllers
 {
-    public class MechanicsController : ApiController
+    public class MechanicsController : BaseController
     {
         IApi<Mechanic> api;
 
@@ -19,10 +20,11 @@ namespace GCS.WebApi.Controllers
             return response == null ? NotFound(): (object)Ok(response);
         }
 
-        public object Get()
+        public object Get(string filter="")
         {
-            var response = api.Get();
-            return response;
+            var response = api.Get(filter);
+            AddContentRange(HttpContext.Current.Response, "mechanics", response.Count.ToString());            
+            return Ok(response); 
         }
 
         [HttpPost]
@@ -32,10 +34,17 @@ namespace GCS.WebApi.Controllers
             return Created(Request.RequestUri + "/" + response.Id, response);
         }
 
-        [HttpPatch]
-        public object Patch([FromBody]Mechanic data)
+        [HttpPut]
+        public object Put([FromBody]Mechanic data)
         {
             var response = api.Update(data);
+            return response == null ? NotFound() : (object)Ok(response);
+        }
+
+        [HttpDelete]
+        public object Delete(int id)
+        {
+            var response = api.Delete(id);
             return response == null ? NotFound() : (object)Ok(response);
         }
     }

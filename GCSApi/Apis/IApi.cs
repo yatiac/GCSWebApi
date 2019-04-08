@@ -7,7 +7,7 @@ namespace GCSApi.Apis
         T Create(T data);
         T Update(T data);
         object Delete(int id);
-        List<T> Get();
+        List<T> Get(string filter);
         T Get(int id);
     }
 }
